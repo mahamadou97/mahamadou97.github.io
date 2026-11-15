@@ -4,6 +4,9 @@ on:
   push:
     branches: [main]
     paths:
+      - 'trouveme/**'
+      - 'chromacascade/**'
+      - 'autour-de-moi-confidentialite/**'
       - 'beta/**'
       - '.github/workflows/verify-beta-pages.yml'
   workflow_dispatch:
@@ -21,14 +24,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          root='https://mahamadou97.github.io/autour-de-moi-confidentialite'
-          for page in beta/autour-de-moi beta/color-cascade; do
+          root='https://mahamadou97.github.io'
+          for page in trouveme/beta chromacascade/beta; do
             url="$root/$page/"
             echo "Contrôle HTTPS public : $url"
-            curl --fail --location --silent --show-error --retry 5 --retry-delay 3 "$url" -o "/tmp/$(basename "$page").html"
-            grep -qi 'Bêta-test' "/tmp/$(basename "$page").html"
-            grep -qi 'Demander une invitation' "/tmp/$(basename "$page").html"
-            grep -qi 'contact.mt.apps@gmail.com' "/tmp/$(basename "$page").html"
+            curl --fail --location --silent --show-error --retry 12 --retry-delay 10 --retry-all-errors "$url" -o "/tmp/${page//\//-}.html"
+            grep -qi 'Bêta-test' "/tmp/${page//\//-}.html"
+            grep -qi 'Demander une invitation' "/tmp/${page//\//-}.html"
+            grep -qi 'contact.mt.apps@gmail.com' "/tmp/${page//\//-}.html"
             echo "OK : $page"
           done
           echo 'Les deux pages sont publiquement lisibles et ne nécessitent pas de connexion GitHub.'
